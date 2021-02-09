@@ -1,3 +1,5 @@
+'use strict';
+
 const bcrypt = require('bcryptjs')
 
 const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/
@@ -45,9 +47,7 @@ const UserService = {
     return db.transaction(async trx => {
       const [languageId] = await trx
         .into('language')
-        .insert([
-          { name: 'French', user_id },
-        ], ['id'])
+        .insert([{ name: 'French', user_id }], ['id'])
 
       // when inserting words,
       // we need to know the current sequence number
@@ -57,15 +57,17 @@ const UserService = {
         .select('last_value')
         .first()
 
+
+        
       const languageWords = [
-        ['entraine toi', 'practice', 2],
-        ['bonjour', 'hello', 3],
-        ['maison', 'house', 4],
-        ['développeur', 'developer', 5],
-        ['traduire', 'translate', 6],
-        ['incroyable', 'amazing', 7],
-        ['chien', 'dog', 8],
-        ['chat', 'cat', null],
+        ['la bouffe', 'food', 2],
+        ['la soupe', 'soup', 3],
+        ['le citron', 'lemon', 4],
+        ['la fraise', 'strawberry', 5],
+        ['la glace', 'ice-cream', 6],
+        ['le poisson', 'fish', 7],
+        ['un oeuf', 'egg', 8],
+        ['le poivre', 'pepper', null],
       ]
 
       const [languageHeadId] = await trx

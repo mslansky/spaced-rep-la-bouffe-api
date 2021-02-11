@@ -11,9 +11,17 @@ const LanguageService = {
         'language.user_id',
         'language.head',
         'language.total_score'
-        )
+      )
       .where('language.user_id', user_id)
       .first();
+  },
+
+  updateLanguageScore(db, user_id, new_score) {
+    return db('language')
+      .where('language.user_id', user_id)
+      .update(
+        {'total_score': new_score}
+      );
   },
 
   getLanguageWords(db, language_id) {
@@ -29,115 +37,51 @@ const LanguageService = {
         'correct_count',
         'incorrect_count'
       )
-      .where({ language_id })
+      .where({ language_id });
   },
 
+  getLanguageWordsLinkedList(words) {
+    const wordsLinkedList = new LinkedList();
 
+    //Find the node that no node points to
+    const nextIds = words.map(word => word.next);
+    const head = words.find(word => !nextIds.includes(word.id));
 
-
-
-
-
-
-
-
-
-  getListWordCount(db, language_id) {
-    return db
-      .from("word")
-      .select("*")
-      .where("word.id", language_id);
-  },
-  populateList(db, languageId) {
-
-    const wordList = new LinkedList();
-
-    return db
-      .select('total_score', 'head')
-      .from('language')
-      .where('id', languageId)
-      .then((rows) => {
-
-        wordList.totalScore = rows[0]['total_score'];
-
-        return rows[0].head;
-      })
-      .then((head) => {
-
-        return db
-          .select('*')
-          .from('word')
-          .where('language_id', languageId)
-          .then((rows) => {
-
-            const insert = function (wordId) {
-
-              if (wordId === null || wordId === undefined) {
-                return;
-              }
-
-              // find word row in resultset
-              const row = rows.find((w) => { return w.id === wordId });
-
-              wordList.insertLast(row)
-
-              insert(row.next);
-            }
-
-            insert(head);
-
-            return wordList;
-          });
-      });
-  },
-
-  async persistList(db, languageId, wordList) {
-
-    let head = null;
-
-    if (wordList.head.val) {
-      head = wordList.head.val.id;
+    wordsLinkedList.push(head);
+    
+    let curr = head;
+    while(curr.next !== null){
+      const nextWord = words.find(word => word.id === curr.next);
+      wordsLinkedList.push(nextWord);
+      curr = nextWord;
     }
 
-    let current = wordList.head;
+    return wordsLinkedList;
+  },
 
-    while (current !== null) {
+  saveLanguageWordsLinkedList: async (db, wordsLinkedList) => {
+    const updateWord = (db, word) => {
+      return db('word')
+        .where('word.id', word.id)
+        .update(word);
+    };
 
-      let nextWordId = null;
-
-      if (current.next) {
-        nextWordId = current.next.val.id;
+    let currentWordNode = wordsLinkedList.first();
+    while(currentWordNode !== null){
+      const currentWord = currentWordNode.val;
+      if(currentWordNode.next !== null) {
+        currentWord.next = currentWordNode.next.val.id;
+      } else {
+        currentWord.next = null;
       }
+      await updateWord(db, currentWord);
 
-      await db('word')
-        .update({
-          original        : current.val.original,
-          translation     : current.val.translation,
-          memory_value    : current.val.memory_value,
-          correct_count   : current.val.correct_count,
-          incorrect_count : current.val.incorrect_count,
-          language_id     : current.val.language_id,
-          next            : nextWordId,
-        })
-        .where('id', current.val.id)
-        .andWhere('language_id', languageId)
-        .returning(['id', 'next'])
-        .then((resp) => {
-
-          return db('language')
-            .update({
-              'total_score': wordList.totalScore,
-              'head': head,
-            })
-            .where('id', languageId)
-            .then(() => {});
-        });
-
-      current = current.next;
+      currentWordNode = currentWordNode.next;
     }
+
+    
   }
 };
-
 
 module.exports = LanguageService;
 

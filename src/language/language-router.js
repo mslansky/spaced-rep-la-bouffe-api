@@ -1,8 +1,10 @@
 const express = require('express')
 const LanguageService = require('./language-service')
 const { requireAuth } = require('../middleware/jwt-auth')
+const LinkedList = require('./LinkedList')
 
 const languageRouter = express.Router()
+const jsonBodyParser = express.json()
 
 languageRouter
   .use(requireAuth)
@@ -61,74 +63,61 @@ languageRouter.get("/head", async (req, res, next) => {
     }
   });
   
-languageRouter.post("/guess", express.json(), async (req, res, next) => {
-  
-    const db     = req.app.get('db');
-    const langId = req.language.id;
-  
-    const { guess } = req.body;
-  
-    if (!guess) {
-      return res.status(400).json({ error: "Missing 'guess' in request body"})
+languageRouter
+  .post('/guess', jsonBodyParser, async (req, res, next) => {
+    try {
+      if(!req.body.guess)
+        return res.status(400).json({
+          error: `Missing 'guess' in request body`,
+        })
+      
+      const guess = req.body.guess;
+      const words = await LanguageService.getLanguageWords(
+          req.app.get("db"),
+          req.language.id
+        );
+
+      const wordsLinkedList = LanguageService.getLanguageWordsLinkedList(words);
+      const currentWord = wordsLinkedList.first().val;
+      const nextWord = wordsLinkedList.first().next.val;
+
+      const isCorrect = currentWord.translation === guess;
+     console.log(`IS CORRECT?: ${isCorrect}`)
+      if(isCorrect){
+        req.language.total_score++;
+        await LanguageService.updateLanguageScore(
+          req.app.get("db"),
+          req.language.id,
+          req.language.total_score);
+
+        currentWord.correct_count++;
+        currentWord.memory_value *= 2;
+      } else {
+        currentWord.incorrect_count++;
+        currentWord.memory_value = 1;
+      }  
+
+      const result = {
+        nextWord: nextWord.original,
+        totalScore: req.language.total_score,
+        wordCorrectCount: nextWord.correct_count,
+        wordIncorrectCount: nextWord.incorrect_count,
+        answer: currentWord.translation,
+        isCorrect: isCorrect
+      };  
+
+      wordsLinkedList.moveHeadForward(currentWord.memory_value);
+      
+      await LanguageService.saveLanguageWordsLinkedList(
+        req.app.get("db"),
+        wordsLinkedList
+      )
+
+      return res.json(result);
+    } catch (error) {
+      next(error)
     }
-  
-    // populate list with words from DB
-    const list = await LanguageService.populateList(db, langId)
-  
-    const currentWordNode = list.head;
-  
-    let isCorrect;
-  
-    if (guess.toLowerCase() === currentWordNode.val.translation.toLowerCase()) {
-  
-      isCorrect = true;
-  
-      // update memory value
-      currentWordNode.val.memory_value *= 2;
-  
-      // update correct count
-      currentWordNode.val.correct_count += 1;
-  
-      // update
-      list.totalScore += 1;
-  
-    } else {
-  
-      isCorrect = false;
-  
-      // update memory value
-      currentWordNode.val.memory_value = 1;
-  
-      // update incorrect count
-      currentWordNode.val.incorrect_count += 1;
-  
-      // don't touch total score
-    }
-  
-    // Shift currentWordNode down by it's memory_value
-    for (let i = 0; i < currentWordNode.val.memory_value; i++) {
-      list.moveDown(currentWordNode);
-    }
-  
-    // persist to DB
-    await LanguageService.persistList(db, langId, list);
-  
-    res.json({
-  
-      // next word info
-      nextWord           : list.head.val.original,
-      wordCorrectCount   : list.head.val.correct_count,
-      wordIncorrectCount : list.head.val.incorrect_count,
-  
-      // global
-      totalScore         : list.totalScore,
-  
-      // current word info
-      answer             : currentWordNode.val.translation,
-      isCorrect          : isCorrect,
-    });
-  
-  });
+  })
   
 
 module.exports = languageRouter

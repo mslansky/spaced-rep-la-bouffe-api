@@ -1,6 +1,5 @@
 'use strict';
 
-
 class Node {
   constructor(val, next) {
     this.val = val || null;
@@ -12,86 +11,53 @@ class LinkedList {
   constructor() {
     this.head = null;
   }
-
-  // Find Node with value val and move it down (away from head) one position
-  moveDown(node) {
-
-    let previousNode = null;
-    let currentNode = this.head;
-
-    // TODO need to be setting node.val.next too
-
-    while (currentNode !== null) {
-
-      if (currentNode.val.id === node.val.id) {
-
-        let nextNodeCopy = currentNode.next;
-
-        
-        if (previousNode === null) {
-
-          currentNode.next     = currentNode.next.next;
-          currentNode.val.next = currentNode.next.val.id;  
-
-          nextNodeCopy.next     = currentNode;
-          nextNodeCopy.val.next = nextNodeCopy.next.val.id; 
-
-          this.head          = nextNodeCopy;
-          this.head.val.next = this.head.next.val.id;    
-
-          return;
-        }
-
-        
-        if (currentNode.next === null) {
-          return;
-        }
-
-       
-        currentNode.next     = currentNode.next.next;
-        currentNode.val.next = currentNode.next.val.id;  // DB next
-
-        nextNodeCopy.next     = currentNode;
-        nextNodeCopy.val.next = nextNodeCopy.next.val.id; // DB next
-
-        previousNode.next     = nextNodeCopy;
-        previousNode.val.next = previousNode.next.val.id; // DB next
-
-        return;
-      }
-
-      previousNode = currentNode;
-      currentNode = currentNode.next;
-    }
+  
+  first(){
+    return this.head;
   }
 
-  insertFirst(item) {
-
-    if (!this.head) {
-      this.head = new Node(item, null);
+  push(value){
+    if(this.head === null){
+      this.head = new Node(value); 
     } else {
-      this.head = new Node(item, this.head);
+      let current = this.head;
+      while(current.next !== null){
+        current = current.next;
+      }
+      current.next = new Node(value);
     }
   }
 
-  insertLast(item) {
-
-    if (!this.head) {
-      return this.insertFirst(item);
+  moveHeadForward(count) {
+    let currentHead = this.head;
+    let previous = null;
+    while(count > 0 && currentHead.next !== null){
+      if(currentHead === this.head){
+        this.head = currentHead.next;
+        previous = this.head;
+      } else {
+        previous.next = currentHead.next;
+        previous = currentHead.next;
+      }
+      //swap
+      const newNext = currentHead.next.next;
+      currentHead.next.next = currentHead;
+      currentHead.next = newNext;
+      
+      count--;
     }
-
-    let currentNode = this.head;
-
-    while (currentNode.next !== null) {
-      currentNode = currentNode.next;
-    }
-
-    const newNode = new Node(item, null);
-
-    currentNode.next = newNode;
-    currentNode.val.next = newNode.val.id;
-
   }
+
+  toString() {
+    let str = '';
+    let current = this.head;
+    while(current !== null){
+      str += `${current.val.id}, `;
+      current = current.next;
+    }
+    return str;
+  }
+  
 }
 
 module.exports = LinkedList;

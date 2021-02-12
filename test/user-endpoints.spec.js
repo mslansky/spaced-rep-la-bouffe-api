@@ -179,7 +179,7 @@ describe('User Endpoints', function () {
             { original: 'la soupe', translation: 'soup' },
             { original: 'le citron', translation: 'lemon' },
             { original: 'la fraise', translation: 'strawberry' },
-            { original: 'la glace', translation: 'ice-cream' },
+            { original: 'la glace', translation: 'ice cream' },
             { original: 'le poisson', translation: 'fish' },
             { original: 'un oeuf', translation: 'egg'},
             { original: 'le poivre', translation: 'pepper'},

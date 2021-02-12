@@ -25,7 +25,7 @@ VALUES
   (2, 1, 'la soupe', 'soup', 3),
   (3, 1, 'le citron', 'lemon', 4),
   (4, 1, 'la fraise', 'strawberry', 5),
-  (5, 1, 'la glace', 'ice-cream', 6),
+  (5, 1, 'la glace', 'ice cream', 6),
   (6, 1, 'le poisson', 'fish', 7),
   (7, 1, 'un oeuf', 'egg', 8),
   (8, 1, 'le poivre', 'pepper', null);

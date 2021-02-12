@@ -62,7 +62,7 @@ const UserService = {
         ['la soupe', 'soup', 3],
         ['le citron', 'lemon', 4],
         ['la fraise', 'strawberry', 5],
-        ['la glace', 'ice-cream', 6],
+        ['la glace', 'ice cream', 6],
         ['le poisson', 'fish', 7],
         ['un oeuf', 'egg', 8],
         ['le poivre', 'pepper', null],

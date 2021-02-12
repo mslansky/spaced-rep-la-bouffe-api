@@ -82,7 +82,7 @@ languageRouter
       const currentWord = wordsLinkedList.first().val;
       const nextWord = wordsLinkedList.first().next.val;
 
-      const isCorrect = currentWord.translation === guess;
+      const isCorrect = currentWord.translation.toLowerCase() === guess.toLowerCase();
      console.log(`IS CORRECT?: ${isCorrect}`)
       if(isCorrect){
         req.language.total_score++;

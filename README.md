@@ -1,52 +1,46 @@
-# Spaced repetition API!
+## Welcome to La Bouffe! (My Spaced Repitition Capstone)
 
-## Local dev setup
+Live Link: https://spaced-repetition-la-bouffe.vercel.app
+Link to Github: https://github.com/mslansky/spaced-repetition--la-bouffe
 
-If using user `dunder-mifflin`:
 
-```bash
-mv example.env .env
-createdb -U dunder-mifflin spaced-repetition
-createdb -U dunder-mifflin spaced-repetition-test
-```
+This application focuses on showcasing my ability to utilize the Linked List data structure algorithm. 
+This application allows the user to practice translated French Words for food! This application is intended to allow for memorization of another language. 
 
-If your `dunder-mifflin` user has a password be sure to set it in `.env` for all appropriate fields. Or if using a different user, update appropriately.
+## LINKED LIST 
 
-```bash
-npm install
-npm run migrate
-env MIGRATION_DB_NAME=spaced-repetition-test npm run migrate
-```
+## Registration Page
 
-And `npm test` should work at this point
+This introductory page allows for users to sign-up or log in to an account. 
+Then they are able to enter thier name, username, and password. Password must contain an uppercase letter, a lowercase letter, a number and a symbol.
 
-## Configuring Postgres
 
-For tests involving time to run properly, configure your Postgres database to run in the UTC timezone.
+## Main Page / Dashboard Page
 
-1. Locate the `postgresql.conf` file for your Postgres installation.
-   1. E.g. for an OS X, Homebrew install: `/usr/local/var/postgres/postgresql.conf`
-   2. E.g. on Windows, _maybe_: `C:\Program Files\PostgreSQL\11.2\data\postgresql.conf`
-   3. E.g  on Ubuntu 18.04 probably: '/etc/postgresql/10/main/postgresql.conf'
-2. Find the `timezone` line and set it to `UTC`:
+After logging in, the user views a dashboard which displays thier name, a link to log back out. It also displays a navigation bar with contains a list of words they are actively practicing, alone with the correct and incorrect scores for each word. A total correct count for all words is also displayed.
 
-```conf
-# - Locale and Formatting -
+A button to "Begin Quiz" is also visible. 
 
-datestyle = 'iso, mdy'
-#intervalstyle = 'postgres'
-timezone = 'UTC'
-#timezone_abbreviations = 'Default'     # Select the set of available time zone
-```
+## Quiz Page
 
-## Scripts
+After selecting the Begin Quiz the user views a page which has an option to return to thier dashboard.
+They also view a prompt to translate a french word. The user is able to input thier translation guess. They are also able to view how many times they have correctly, and incorrectly guessed the particular word displayed.
 
-Start the application `npm start`
+When the user submits thier guess, feedback is displayed which allows they to see if they got the guess correct or incorrect. The feedback also displays the chosen word, the correct answer, and your guess. 
 
-Start nodemon for the application `npm run dev`
+The user is then able to click "Next Word" button to continue practicing the words, or they may return to thier dashboard to exit the quiz. 
 
-Run the tests mode `npm test`
+## Tech Stack 
+React - React Context Used
+JSX
+JavaScript ES6
+HTML5
+CSS3
+Cypress Testing
 
-Run the migrations up `npm run migrate`
+Back-End Technology
+Express.js
+Node.js
 
-Run the migrations down `npm run migrate -- 0`
+Link to Server-Side Code: https://github.com/mslansky/spaced-rep-la-bouffe-api
+Link to Heroku Server-Side Code: https://spacedrep-la-bouffe.herokuapp.com/

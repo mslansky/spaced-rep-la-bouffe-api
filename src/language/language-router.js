@@ -66,6 +66,7 @@ languageRouter.get("/head", async (req, res, next) => {
 languageRouter
   .post('/guess', jsonBodyParser, async (req, res, next) => {
     try {
+      console.log(req.body)
       if(!req.body.guess)
         return res.status(400).json({
           error: `Missing 'guess' in request body`,
@@ -107,7 +108,7 @@ languageRouter
       };  
 
       wordsLinkedList.moveHeadForward(currentWord.memory_value);
-      
+
       await LanguageService.saveLanguageWordsLinkedList(
         req.app.get("db"),
         wordsLinkedList

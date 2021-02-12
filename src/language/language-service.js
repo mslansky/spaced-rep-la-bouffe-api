@@ -43,7 +43,7 @@ const LanguageService = {
   getLanguageWordsLinkedList(words) {
     const wordsLinkedList = new LinkedList();
 
-    //Find the node that no node points to
+   
     const nextIds = words.map(word => word.next);
     const head = words.find(word => !nextIds.includes(word.id));
 

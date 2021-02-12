@@ -39,7 +39,7 @@ class LinkedList {
         previous.next = currentHead.next;
         previous = currentHead.next;
       }
-      //swap
+     
       const newNext = currentHead.next.next;
       currentHead.next.next = currentHead;
       currentHead.next = newNext;
